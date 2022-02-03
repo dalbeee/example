@@ -7,12 +7,10 @@ import { HttpException } from "../share/errors/httpException";
 type ErrorBoundaryProps = PropsWithChildren<{}>;
 
 interface ErrorBoundaryState {
-  hasError: boolean;
-  error: Error | null;
+  error: HttpException | null;
 }
 
 const errorBoundaryState: ErrorBoundaryState = {
-  hasError: false,
   error: null,
 };
 
@@ -35,7 +33,7 @@ export default class HttpErrorBoundary extends React.Component<
       "unhandledrejection",
       this.handleRejectedPromise
     );
-    Router.events.off("routeChangeStart", this.resetState);
+    Router.events.off("routeChangeComplete", this.resetState);
   }
 
   private resetState = () => {
@@ -43,8 +41,8 @@ export default class HttpErrorBoundary extends React.Component<
     window.addEventListener("unhandledrejection", this.handleRejectedPromise);
   };
 
-  private setError = (error: Error) => {
-    this.setState({ error, hasError: true });
+  private setError = (error: HttpException) => {
+    this.setState({ error });
   };
 
   private handleRejectedPromise = (event: PromiseRejectionEvent) => {
